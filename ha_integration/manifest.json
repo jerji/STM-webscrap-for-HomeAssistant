@@ -1,0 +1,9 @@
+{
+  "domain": "stm_metro_status",
+  "name": "STM Metro Status",
+  "documentation": "https://www.stm.info",
+  "dependencies": [],
+  "codeowners": ["@jerji","@mattyes"],
+  "requirements": ["requests"],
+  "version": "2.0.0"
+}
