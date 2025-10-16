@@ -1,6 +1,9 @@
+# custom_components/stm_metro_status/sensor.py
 import asyncio
 import logging
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.core import HomeAssistant
 from .stm_api import fetch_metro_status
 
 _LOGGER = logging.getLogger(__name__)
@@ -12,8 +15,13 @@ LINE_SENSORS = {
     "Line 4 - Yellow": "stm_metro_line_4_status",
 }
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the STM Metro Status sensors."""
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry,
+    async_add_entities: AddEntitiesCallback,
+):
+    """Set up STM Metro Status sensors from a config entry."""
+    _LOGGER.debug("Setting up STM Metro Status sensors.")
     statuses = await hass.async_add_executor_job(fetch_metro_status)
     sensors = [
         STMMetroSensor(line, statuses.get(line, "Unknown"))
@@ -42,5 +50,6 @@ class STMMetroSensor(Entity):
 
     async def async_update(self):
         """Fetch new state data for the sensor."""
+        _LOGGER.debug("Updating STM Metro Status for %s", self._line_name)
         statuses = await asyncio.get_event_loop().run_in_executor(None, fetch_metro_status)
         self._state = statuses.get(self._line_name, "Unknown")
